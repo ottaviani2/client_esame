@@ -11,7 +11,7 @@
     "url": "client"
   },
   "author": "f.ottaviani5",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "follow-redirects": "^1.13.0",
     "request": "^2.88.2"
