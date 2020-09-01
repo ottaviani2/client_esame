@@ -4,7 +4,7 @@ var request = require('request');
 
 var menuHandler;
 
-const HOST = 'https://morning-temple-86022.herokuapp.com/';
+const HOST = 'https://morning-temple-86022.herokuapp.com';
 const user = "fra.otto@hotmail.com";
 const passw = "password";
 const cookies = new Map();
@@ -56,33 +56,25 @@ function Menu(){
 //LOGIN
 function login(){
   var options = {
-    host: HOST,
-    path: '/users/login',
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  }
-
-  callback = function(response) {
-    var str = '';
+    'method': 'POST',
+    'url': 'https://morning-temple-86022.herokuapp.com/users/login',
+    'headers': {
+      'Content-Type': 'application/json',
+      'Cookie': 'auth='+my_cookie
+    },
+    body: JSON.stringify({"name":"fra.otto@hotmail.com","password":"password"})
+  
+  };
+  request(options, function (error, response) {
+    if (error) throw new Error(error);
     cookie = response.headers['set-cookie'];
-    response.on('data', function (chunk) {
-      str += chunk;
-    });
-      
-    response.on('end', function () {
-      cookie=cookie+' ';
-      var inizio = cookie.indexOf("=")+1;
-      var fine = cookie.indexOf(";");
-      my_cookie = cookie.substring(inizio, fine);
-      cookies.set(my_cookie,{ mail: user});
-    });
-  }
-
-  var req = http.request(options, callback);
-  req.write('{"name":"'+user+'","password":"'+passw+'"}');
-  req.end();
+    cookie=cookie+' ';
+    var inizio = cookie.indexOf("=")+1;
+    var fine = cookie.indexOf(";");
+    my_cookie = cookie.substring(inizio, fine);
+    cookies.set(my_cookie,{ mail: user});
+    console.log(response.body);
+  });
 }
 
 //USERS
@@ -90,30 +82,20 @@ function users(){
   console.log('\n'+'Users');
 
   var options = {
-    host: HOST,
-    path: '/users',
-    port: PORT,
-    method: 'GET',
-    headers: {
+    'method': 'GET',
+    'url': 'https://morning-temple-86022.herokuapp.com/users',
+    'headers': {
       'Content-Type': 'application/json',
-    }
+      'Cookie': 'auth='+my_cookie
+    },
+    body: JSON.stringify({"city":"Lunano","clima":"105","name":"fra.otto@hotmail.com","password":"password"})
+  
   };
-
-  callback = function(response) {
-    var str = '';
-
-    response.on('data', function (chunk) {
-      str += chunk;
-    });
-
-    response.on('end', function () {
-      console.log(str);
-    });
-  }
-      
-  var req = http.request(options, callback);
-  req.setHeader('Cookie',['auth='+my_cookie]);
-  req.end();
+  request(options, function (error, response) {
+    if (error) throw new Error(error);
+    console.log(response.body);
+  });
+  
 }
 
 //OPENWEATHER
@@ -121,7 +103,7 @@ function openweather(){
   console.log('\n'+'Openweather');
   var options = {
     'method': 'GET',
-    'url': 'http://localhost:3000/weather',
+    'url': 'https://morning-temple-86022.herokuapp.com/weather',
     'headers': {
       'Content-Type': 'application/json',
       'Cookie': 'auth='+my_cookie
@@ -139,37 +121,20 @@ function openweather(){
 function new_plant(){
   console.log('\n'+'Nuova Pianta');
   var options = {
-    host: HOST,
-    path: '/pianta',
-    port: PORT,
-    method: 'POST',
-    headers: {
+    'method': 'POST',
+    'url': 'https://morning-temple-86022.herokuapp.com/pianta',
+    'headers': {
       'Content-Type': 'application/json',
-      'Connection' : 'keep-alive'
-      } 
-    };
-
-    callback = function(response) {
-      
-    var str = '';
-    response.on('data', function (chunk) {
-      str += chunk;
-    });
-
-    response.on('end', function () {
-      console.log('\n'+str);
-    });
-  }
-
-  const id = 'CAC';
-  const clima = '106';    
-  const nome = 'Cactus';
-  const latin = 'Cactacee';
-
-  var req = http.request(options, callback);
-  req.setHeader('Cookie',['auth='+my_cookie]);
-  req.write('{"id":"'+id+'","clima":"'+clima+'", "name":"'+nome+'", "latin":"'+latin+'" }');
-  req.end();
+      'Cookie': 'auth=%242a%2410%24SD89QfuqhQkVOKqD0ZYA1esvsG.CwC8ehuEwQAOIPOt10begFXtIK'
+    },
+    body: JSON.stringify({"id":"CAC","clima":"106","nome":"Cactus","latin":"Cactacee"})
+  
+  };
+  request(options, function (error, response) {
+    if (error) throw new Error(error);
+    console.log(response.body);
+  });
+  
 }
 
 //CERCA_PIANTA
@@ -177,13 +142,14 @@ function cerca_pianta(){
   console.log('\n'+'Cerca Pianta');
   
   var options = {
-    'method': 'GET',
-    'url': 'http://localhost:3000/pianta',
+    'method': 'POST',
+    'url': 'https://morning-temple-86022.herokuapp.com/pianta',
     'headers': {
       'Content-Type': 'application/json',
       'Cookie': 'auth='+my_cookie
     },
-    body: JSON.stringify({"name":"Olivo","password":"password"})
+    body: JSON.stringify({"id":"CAC","clima":"106","nome":"Cactus","latin":"Cactacee"})
+  
   };
   request(options, function (error, response) {
     if (error) throw new Error(error);
@@ -194,32 +160,22 @@ function cerca_pianta(){
 //AGGIORNA PIANTA
 function update_pianta(){
   console.log('\n'+'Update pianta');
+
   var options = {
-  host: HOST,
-  path: '/pianta/c_name',
-  port: PORT,
-  method: 'PUT',
-  headers: {
-    'Content-Type': 'application/json',
-    'Connection' : 'keep-alive'
-    } 
+    'method': 'PUT',
+    'url': 'https://morning-temple-86022.herokuapp.com/pianta/c_name',
+    'headers': {
+      'Content-Type': 'application/json',
+      'Cookie': 'auth='+my_cookie
+    },
+    body: JSON.stringify({"name":"Cactus","newname":"Cactus_nuovo"})
+  
   };
-
-  callback = function(response) {     
-    var str = '';
-    response.on('data', function (chunk) {
-      str += chunk;
-    });
-
-    response.on('end', function () {
-      console.log(str);
-    });
-  }
-
-  var req = http.request(options, callback);
-  req.setHeader('Cookie',['auth='+my_cookie]);
-  req.write('{"name":"Olivo_nuovo", "newname":"Olivo"}');
-  req.end();
+  request(options, function (error, response) {
+    if (error) throw new Error(error);
+    console.log(response.body);
+  });
+  
 }
 
 //ELIMINA PIANTA
@@ -228,12 +184,12 @@ function delete_pianta(){
   
   var options = {
     'method': 'DELETE',
-    'url': 'http://localhost:3000/pianta',
+    'url': 'https://morning-temple-86022.herokuapp.com/pianta',
     'headers': {
       'Content-Type': 'application/json',
       'Cookie': 'auth='+my_cookie
     },
-    body: JSON.stringify({"name":"Cactus"})
+    body: JSON.stringify({"name":"Cactus_nuovo"})
   };
   request(options, function (error, response) {
     if (error) throw new Error(error);
